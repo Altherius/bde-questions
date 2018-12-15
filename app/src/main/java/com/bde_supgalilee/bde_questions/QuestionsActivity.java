@@ -179,7 +179,7 @@ public class QuestionsActivity extends AppCompatActivity {
         do  {
             int index = randomizer.nextInt(questions.size());
             q = questions.get(index);
-        } while (q.getQuestion().contentEquals(questionField.getText()));
+        } while (questions.size() != 1 && q.getQuestion().contentEquals(questionField.getText()) );
 
         return q;
     }
