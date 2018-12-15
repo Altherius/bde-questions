@@ -9,4 +9,5 @@
     <string name="random">Aléatoire</string>
     <string name="connection_placeholder">Connexion au serveur</string>
     <string name="loading_placeholder">Chargement des questions</string>
+    <string name="check_connection">Chargement des questions</string>
 </resources>

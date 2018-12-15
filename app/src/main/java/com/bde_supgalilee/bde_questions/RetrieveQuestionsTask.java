@@ -12,6 +12,10 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
+/**
+ * @author Altherius
+ * @version 1.0
+ */
 public class RetrieveQuestionsTask extends AsyncTask<Void, Void, ArrayList<Question>> {
 
     private MainActivity myActivity;
@@ -29,9 +33,11 @@ public class RetrieveQuestionsTask extends AsyncTask<Void, Void, ArrayList<Quest
         String API_URL = "http://questions.bde-sup-galilee.fr/api/questions";
 
         try {
+            /* Seeks data from the API */
             URL url = new URL(API_URL);
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             try {
+                /* Reads data into a buffered reader */
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
                 StringBuilder stringBuilder = new StringBuilder();
                 String line;
@@ -40,9 +46,11 @@ public class RetrieveQuestionsTask extends AsyncTask<Void, Void, ArrayList<Quest
                 }
                 bufferedReader.close();
 
+                /* Converts string to JSON array */
                 JSONArray json = new JSONArray(stringBuilder.toString());
                 ArrayList<Question> questions = new ArrayList<>();
 
+                /* Parse the JSON Array to POJO Array */
                 for (int i = 0 ; i < json.length() ; i++ ) {
                     JSONObject jsonObject = json.getJSONObject(i);
                     String question = jsonObject.optString("question");

@@ -17,6 +17,12 @@ public class Question implements Parcelable {
 
     public static String TYPE = "question";
 
+    /**
+     * Builds a question from a question text and an answer text.
+     *
+     * @param question The question text.
+     * @param answer The answer text.
+     */
     public Question(String question, String answer) {
 
             this.question = question;
@@ -25,6 +31,14 @@ public class Question implements Parcelable {
 
     }
 
+    /**
+     * Builds a question from a question text, an answer text, and a symbolic
+     * difficulty level.
+     *
+     * @param question The question text.
+     * @param answer The answer text.
+     * @param difficulty The difficulty level.
+     */
     public Question(String question, String answer, int difficulty) {
 
         this.question = question;
@@ -34,6 +48,11 @@ public class Question implements Parcelable {
     }
 
 
+    /**
+     * Builds the question in the order of the full constructor.
+     *
+     * @param in The Parcel input.
+     */
     protected Question(Parcel in) {
         question = in.readString();
         answer = in.readString();
@@ -52,14 +71,29 @@ public class Question implements Parcelable {
         }
     };
 
+    /**
+     * Getter for the question text.
+     *
+     * @return The question text.
+     */
     public String getQuestion() {
         return question;
     }
 
+    /**
+     * Getter for the answer text.
+     *
+     * @return The answer text.
+     */
     public String getAnswer() {
         return answer;
     }
 
+    /**
+     * Getter for the difficulty level.
+     *
+     * @return The difficulty level.
+     */
     public int getDifficulty() {
         return difficulty;
     }

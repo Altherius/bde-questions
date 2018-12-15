@@ -11,6 +11,10 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Random;
 
+/**
+ * @author Altherius
+ * @version 1.0
+ */
 public class QuestionsActivity extends AppCompatActivity {
 
     private static final int EASY = 1;
