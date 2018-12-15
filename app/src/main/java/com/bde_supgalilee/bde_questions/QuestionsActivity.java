@@ -1,6 +1,8 @@
 package com.bde_supgalilee.bde_questions;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,6 +25,8 @@ public class QuestionsActivity extends AppCompatActivity {
 
     private TextView questionField;
     private TextView answerField;
+    private TextView checksumField;
+
     private ArrayList<Question> easyQuestions;
     private ArrayList<Question> normalQuestions;
     private ArrayList<Question> hardQuestions;
@@ -41,6 +45,11 @@ public class QuestionsActivity extends AppCompatActivity {
 
         questionField = findViewById(R.id.activity_questions_question);
         answerField = findViewById(R.id.activity_questions_answer);
+        checksumField = findViewById(R.id.activity_questions_checksum);
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String checksum = preferences.getString("questions_checksum", "Corrupted checksum");
+        checksumField.setText(checksum);
 
         ArrayList<Question> questions = getIntent().getParcelableArrayListExtra("questions");
         easyQuestions = new ArrayList<>();

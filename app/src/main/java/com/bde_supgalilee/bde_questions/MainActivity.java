@@ -2,14 +2,22 @@ package com.bde_supgalilee.bde_questions;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -52,7 +60,10 @@ public class MainActivity extends AppCompatActivity {
                     }
                     loadingField.setText("Connexion au serveur");
 
-                    loadingField.setText("Traitement des questions");
+
+                    loadingField.setText("Comparaison de la somme de contrôle");
+
+                    loadingField.setText("Traitement des données");
                     loadQuestions();
 
 
@@ -73,11 +84,46 @@ public class MainActivity extends AppCompatActivity {
      */
     private void loadQuestions() {
 
-        RetrieveQuestionsTask asynctask = new RetrieveQuestionsTask(this);
+        RetrieveChecksumTask checksumTask = new RetrieveChecksumTask(this);
+        RetrieveQuestionsTask questionsTask = new RetrieveQuestionsTask(this);
+
         try {
-            ArrayList<Question> questions = asynctask.execute().get();
+            String checksum = checksumTask.execute().get();
+
+
+
+
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+            /* Get current last known checksum */
+            String memoryChecksum = preferences.getString("questions_checksum", "");
+            SharedPreferences.Editor editor = preferences.edit();
+
+            ArrayList<Question> questions = null;
+            Gson gson = new Gson();
+
+            /* Saving Checksum in preferences and getting questions from API if there is a difference
+            * the questions are also saved to memory, overwriting any previous set of questions */
+            if (!memoryChecksum.equals(checksum)) {
+                questions = questionsTask.execute().get();
+                String questionsListJson = gson.toJson(questions);
+                editor.putString("questions_list", questionsListJson);
+
+                editor.putString("questions_checksum", checksum);
+                editor.commit();
+            }
+
+            /* Get questions from memory if checksums are the same */
+            else {
+                String questionsListJson = preferences.getString("questions_list", "");
+                Type type = new TypeToken<ArrayList<Question>>() {}.getType();
+                questions = gson.fromJson(questionsListJson, type);
+            }
+
 
             setQuestions(questions);
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }
