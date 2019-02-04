@@ -98,6 +98,7 @@
         android:layout_height="wrap_content"
         android:text="Checksum"
         android:textSize="8sp"
+        android:gravity="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

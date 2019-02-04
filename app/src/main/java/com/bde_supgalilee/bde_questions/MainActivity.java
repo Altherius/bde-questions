@@ -6,9 +6,11 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -16,9 +18,7 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
+import java.util.Date;
 
 /**
  * @author Altherius
@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ArrayList<Question> questions;
     private TextView loadingField;
-    private Handler handler;
+    private Button offlineModeButton;
 
 
     /**
@@ -41,8 +41,28 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        offlineModeButton = findViewById(R.id.activity_main_offline);
+
         loadingField = findViewById(R.id.activity_main_loading);
         loadingField.setText(R.string.connection_placeholder);
+
+        offlineModeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+                Gson gson = new Gson();
+
+                String questionsListJson = preferences.getString("questions_list", "");
+                Type type = new TypeToken<ArrayList<Question>>() {}.getType();
+                questions = gson.fromJson(questionsListJson, type);
+
+                Intent questionsActivity = new Intent(MainActivity.this, QuestionsActivity.class);
+                questionsActivity.putParcelableArrayListExtra("questions", getQuestions());
+                startActivity(questionsActivity);
+
+                finish();
+            }
+        });
 
         Thread loadingThread = new Thread() {
 
@@ -51,19 +71,25 @@ public class MainActivity extends AppCompatActivity {
                     super.run();
 
                     ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-                    NetworkInfo netInfo = cm.getActiveNetworkInfo();
+                    NetworkInfo netInfo = null;
+                    if (cm != null) {
+                        netInfo = cm.getActiveNetworkInfo();
+                    } else {
+                        Log.e("ERROR", "Impossible to get network information.");
+                    }
+
 
                     while (netInfo == null || !(netInfo.isConnected())) {
-                        loadingField.setText("Vérifiez votre connexion");
+                        loadingField.setText(R.string.check_connection);
+                        offlineModeButton.setVisibility(View.VISIBLE);
                         sleep(1000);
                         netInfo = cm.getActiveNetworkInfo();
                     }
-                    loadingField.setText("Connexion au serveur");
-
-
-                    loadingField.setText("Comparaison de la somme de contrôle");
-
-                    loadingField.setText("Traitement des données");
+                    loadingField.setText(R.string.connection_placeholder);
+                    if (offlineModeButton.isShown()) {
+                        offlineModeButton.setVisibility(View.INVISIBLE);
+                    }
+                    loadingField.setText(R.string.treating_data);
                     loadQuestions();
 
 
@@ -83,7 +109,6 @@ public class MainActivity extends AppCompatActivity {
      * changes to the game activity.
      */
     private void loadQuestions() {
-
         RetrieveChecksumTask checksumTask = new RetrieveChecksumTask(this);
         RetrieveQuestionsTask questionsTask = new RetrieveQuestionsTask(this);
 
@@ -99,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
             String memoryChecksum = preferences.getString("questions_checksum", "");
             SharedPreferences.Editor editor = preferences.edit();
 
-            ArrayList<Question> questions = null;
+            ArrayList<Question> questions;
             Gson gson = new Gson();
 
             /* Saving Checksum in preferences and getting questions from API if there is a difference
@@ -110,7 +135,8 @@ public class MainActivity extends AppCompatActivity {
                 editor.putString("questions_list", questionsListJson);
 
                 editor.putString("questions_checksum", checksum);
-                editor.commit();
+                editor.putString("last_checksum_update", new java.util.Date().toLocaleString());
+                editor.apply();
             }
 
             /* Get questions from memory if checksums are the same */
@@ -151,9 +177,5 @@ public class MainActivity extends AppCompatActivity {
      */
     public void setQuestions(ArrayList<Question> questions) {
         this.questions = questions;
-    }
-
-    public TextView getLoadingField() {
-        return this.loadingField;
     }
 }

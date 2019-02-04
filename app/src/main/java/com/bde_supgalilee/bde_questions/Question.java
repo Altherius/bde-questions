@@ -15,8 +15,6 @@ public class Question implements Parcelable {
     private String answer;
     private int difficulty;
 
-    public static String TYPE = "question";
-
     /**
      * Builds a question from a question text and an answer text.
      *

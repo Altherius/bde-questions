@@ -25,7 +25,6 @@ public class QuestionsActivity extends AppCompatActivity {
 
     private TextView questionField;
     private TextView answerField;
-    private TextView checksumField;
 
     private ArrayList<Question> easyQuestions;
     private ArrayList<Question> normalQuestions;
@@ -45,10 +44,13 @@ public class QuestionsActivity extends AppCompatActivity {
 
         questionField = findViewById(R.id.activity_questions_question);
         answerField = findViewById(R.id.activity_questions_answer);
-        checksumField = findViewById(R.id.activity_questions_checksum);
+        TextView checksumField = findViewById(R.id.activity_questions_checksum);
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        String checksum = preferences.getString("questions_checksum", "Corrupted checksum");
+        String checksum = preferences.getString("questions_checksum", getString(R.string.default_checksum));
+        if (getString(R.string.default_checksum) != checksum) {
+            checksum = checksum + " (" + preferences.getString("last_checksum_update", "") + ")";
+        }
         checksumField.setText(checksum);
 
         ArrayList<Question> questions = getIntent().getParcelableArrayListExtra("questions");

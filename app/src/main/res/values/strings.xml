@@ -1,13 +1,20 @@
 <resources>
     <string name="app_name">BDE Questions</string>
     <string name="button_title">Générer</string>
+
     <string name="question_placeholder">La question apparaîtra ici.</string>
     <string name="answer_placeholder">La réponse sera ici.</string>
     <string name="hard">Difficile</string>
     <string name="easy">Facile</string>
     <string name="normal">Moyen</string>
     <string name="random">Aléatoire</string>
+
     <string name="connection_placeholder">Connexion au serveur</string>
     <string name="loading_placeholder">Chargement des questions</string>
-    <string name="check_connection">Chargement des questions</string>
+    <string name="offline_placeholder">Mode hors-ligne</string>
+    <string name="check_connection">Vérifiez votre connexion</string>
+    <string name="default_checksum">Corrupted checksum (or in offline mode)</string>
+
+
+    <string name="treating_data">Traitement des données</string>
 </resources>
